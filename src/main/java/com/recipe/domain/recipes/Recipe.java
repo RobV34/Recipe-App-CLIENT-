@@ -1,4 +1,4 @@
-package com.keyin.client;
+package com.recipe.domain.recipes;
 
 import java.util.List;
 

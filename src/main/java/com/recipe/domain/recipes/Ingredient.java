@@ -1,16 +1,39 @@
-package com.keyin.client;
+package com.recipe.domain.recipes;
+
+import java.sql.Array;
+import java.util.Arrays;
+
 
 public class Ingredient {
+
     private String name;
     private Boolean isCommonAllergen;
 
     public Ingredient() {
     }
 
-    public Ingredient(String name, Boolean isCommonAllergen) {
+    public Ingredient(String name) {
         this.name = name;
-        this.isCommonAllergen = isCommonAllergen;
+        if (compareIngredientWithCommonAllergensList()) {
+            isCommonAllergen = true;
+        } else {
+            isCommonAllergen = false;
+        }
     }
+
+    public Boolean compareIngredientWithCommonAllergensList(){
+        String[] commonAllergenList = {"peanuts", "milk", "eggs", "pecans", "walnuts", "soy", "almonds"};
+
+        Boolean isOnAllergenList = false;
+
+        for (String allergen : commonAllergenList) {
+            if (allergen.equalsIgnoreCase(this.name)){
+                isOnAllergenList = true;
+            }
+        }
+        return isOnAllergenList;
+    }
+
 
     public String getName() {
         return name;
@@ -40,13 +63,4 @@ public class Ingredient {
     public int hashCode() {
         return name.hashCode();
     }
-
-    @Override
-    public String toString() {
-        return "Ingredient{" +
-                "name='" + name + '\'' +
-                ", isCommonAllergen=" + isCommonAllergen +
-                '}';
-    }
 }
-

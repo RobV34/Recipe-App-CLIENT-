@@ -1,6 +1,6 @@
-package com.keyin.users;
+package com.recipe.domain.users;
 
-import com.keyin.client.Ingredient;
+import com.recipe.domain.recipes.Ingredient;
 import java.util.List;
 
 public class User {

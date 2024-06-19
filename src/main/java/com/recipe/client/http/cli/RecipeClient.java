@@ -1,14 +1,17 @@
-package com.keyin.client;
+package com.recipe.client.http.cli;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.keyin.users.User;
+import com.recipe.domain.users.User;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import com.recipe.domain.recipes.Recipe;
+import com.recipe.domain.recipes.Ingredient;
 
 public class RecipeClient {
     private static final String SERVER_URL = "http://localhost:8080/recipe";
@@ -37,11 +40,8 @@ public class RecipeClient {
             System.out.print("Enter ingredient name (or 'done' to finish): ");
             String name = scanner.nextLine();
             if (name.equalsIgnoreCase("done")) break;
-            System.out.print("Is this a common allergen? (true/false): ");
-            Boolean isCommonAllergen = scanner.nextBoolean();
-            scanner.nextLine();  // Consume newline
 
-            ingredients.add(new Ingredient(name, isCommonAllergen));
+            ingredients.add(new Ingredient(name));
         }
 
         User user = new User();
@@ -65,6 +65,7 @@ public class RecipeClient {
     }
 
     private static void printResponse(HttpURLConnection conn) throws IOException {
+        System.out.println(conn.getResponseCode());
         if (conn.getResponseCode() == 200) {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"))) {
                 StringBuilder response = new StringBuilder();
