@@ -9,5 +9,8 @@
         <module name="Recipe-App-CLIENT" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="recipe-app-client (1) (com.keyin)" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
