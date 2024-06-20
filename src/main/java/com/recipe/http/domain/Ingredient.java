@@ -1,24 +1,21 @@
-package com.recipe.domain.recipes;
+package com.recipe.http.domain;
 
 import java.sql.Array;
 import java.util.Arrays;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Ingredient {
 
     private String name;
     private Boolean isCommonAllergen;
 
-    public Ingredient() {
-    }
 
-    public Ingredient(String name) {
+    @JsonCreator
+    public Ingredient(@JsonProperty("name") String name) {
         this.name = name;
-        if (compareIngredientWithCommonAllergensList()) {
-            isCommonAllergen = true;
-        } else {
-            isCommonAllergen = false;
-        }
+        this.isCommonAllergen = compareIngredientWithCommonAllergensList();
     }
 
     public Boolean compareIngredientWithCommonAllergensList(){

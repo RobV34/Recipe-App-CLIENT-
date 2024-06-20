@@ -1,4 +1,4 @@
-package com.recipe.domain.recipes;
+package com.recipe.http.domain;
 
 import java.util.List;
 
@@ -69,4 +69,3 @@ public class Recipe {
         return result;
     }
 }
-

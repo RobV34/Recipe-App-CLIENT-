@@ -7,8 +7,10 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Recipe-App-CLIENT" />
-        <module name="recipe-app-client (1) (com.keyin)" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="recipe-app-client (1) (com.keyin)" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>
