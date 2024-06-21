@@ -1,6 +1,9 @@
 package com.recipe.http.cli;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.recipe.http.client.RESTClient;
+
+import java.io.IOException;
 
 public class HTTPRestCLIApplication {
 
@@ -20,7 +23,7 @@ public class HTTPRestCLIApplication {
         this.restClient = restClient;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException, InterruptedException {
         for (String arg : args) {
             System.out.println(arg);
         }
@@ -37,13 +40,16 @@ public class HTTPRestCLIApplication {
 
             cliApp.setRestClient(restClient);
 
-            if (serverURL.matches(".*\\/recipe\\/[A-Za-z0-9]+") && CRUDMethod.equalsIgnoreCase("GET")) {
+           if (serverURL.contains("userMatches") && CRUDMethod.equalsIgnoreCase("GET")) {
+               int userId = 5;
+                cliApp.getRestClient().getRecipesForUserIngredients(userId);
+            } else if (serverURL.matches(".*\\/recipe\\/[A-Za-z0-9]+") && CRUDMethod.equalsIgnoreCase("GET")) {
                 cliApp.getRestClient().getGETResponseFromHTTPRequest("recipe/{recipeName}");
             } else if(serverURL.matches(".*\\/recipe\\/[A-Za-z0-9]+") && CRUDMethod.equalsIgnoreCase("DELETE")) {
                 cliApp.getRestClient().getDELETEResponseFromHTTPRequest("recipe/{recipeName}");
-            } else if (serverURL.contains("recipe")) {
+            } else if (serverURL.matches(".*\\/recipe")) {
                 cliApp.getRestClient().getGETResponseFromHTTPRequest("recipe");
-            } else if (serverURL.contains("recipes")) {
+            } else if (serverURL.matches(".*\\/recipes")) {
                 cliApp.getRestClient().getGETResponseFromHTTPRequest("recipes");
             } else {
                 System.out.println("other URL");

@@ -6,15 +6,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.http.domain.Ingredient;
 import com.recipe.http.domain.Recipe;
+import com.recipe.http.domain.User;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RESTClient {
 
@@ -90,6 +95,59 @@ public class RESTClient {
         return recipeSearched;
 
     }
+
+    public User getUserById(int userId) throws IOException, InterruptedException {
+        User requestedUser = new User();
+
+        String url = "http://localhost:8080/user/" + userId;
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
+
+        ObjectMapper om = new ObjectMapper();
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        HttpResponse<String> response = HttpClient.newHttpClient()
+                .send(request, HttpResponse.BodyHandlers.ofString());
+
+        if (response.statusCode() != 200) {
+            System.out.println("Failed to fetch user. Status code: " + response.statusCode());
+            return null;
+        }
+        requestedUser = om.readValue(response.body(), new TypeReference<User>() {});
+
+        return requestedUser;
+    }
+
+    public List<Recipe> getRecipesForUserIngredients(int userId) throws IOException, InterruptedException {
+
+        ObjectMapper om = new ObjectMapper();
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        User selectedUser = getUserById(userId);
+
+        String urlWithUser = serverURL + "?userId=" + selectedUser.getUserId();
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlWithUser)).build();
+
+        try {
+            HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() != 200) {
+                System.out.println("Status Code: " + response.statusCode());
+            }
+
+            // Deserialize the response body to a list of Recipe objects
+            List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {});
+
+            System.out.println(recipesForUser);
+            return recipesForUser;
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
 
     public <T> T getDELETEResponseFromHTTPRequest(String requestParameter) {
