@@ -136,14 +136,7 @@ public class RESTClient {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
-            switch (requestParameter) {
-                case "recipe/{recipeName}":
-                    System.out.println(response.body());
-                    return (T) response.body();
-                default:
-                    System.out.println("default");
-                    return (T) "default";
-            }
+            System.out.println("Recipe deleted.");
 
 
         } catch (IOException | InterruptedException e) {
