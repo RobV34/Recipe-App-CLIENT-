@@ -96,36 +96,14 @@ public class RESTClient {
 
     }
 
-    public User getUserById(int userId) throws IOException, InterruptedException {
-        User requestedUser = new User();
 
-        String url = "http://localhost:8080/user/" + userId;
-
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
-
-        ObjectMapper om = new ObjectMapper();
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-        HttpResponse<String> response = HttpClient.newHttpClient()
-                .send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() != 200) {
-            System.out.println("Failed to fetch user. Status code: " + response.statusCode());
-            return null;
-        }
-        requestedUser = om.readValue(response.body(), new TypeReference<User>() {});
-
-        return requestedUser;
-    }
 
     public List<Recipe> getRecipesForUserIngredients(int userId) throws IOException, InterruptedException {
 
         ObjectMapper om = new ObjectMapper();
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        User selectedUser = getUserById(userId);
-
-        String urlWithUser = serverURL + "?userId=" + selectedUser.getUserId();
+        String urlWithUser = serverURL + "?userId=" + userId;
 
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlWithUser)).build();
 
@@ -135,7 +113,6 @@ public class RESTClient {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
-            // Deserialize the response body to a list of Recipe objects
             List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {});
 
             System.out.println(recipesForUser);
