@@ -4,7 +4,6 @@ package com.recipe.http.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipe.http.domain.Recipe;
 
@@ -28,7 +27,7 @@ public class RESTClient {
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode()!=200) {
+            if (response.statusCode() != 200) {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
@@ -84,7 +83,8 @@ public class RESTClient {
 
         ObjectMapper om = new ObjectMapper();
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        recipeSearched = om.readValue(response, new TypeReference<Recipe>() {});
+        recipeSearched = om.readValue(response, new TypeReference<Recipe>() {
+        });
 
         System.out.println(recipeSearched.getName());
         return recipeSearched;
@@ -97,7 +97,7 @@ public class RESTClient {
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode()!=200) {
+            if (response.statusCode() != 200) {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
@@ -119,12 +119,56 @@ public class RESTClient {
     }
 
 
+    public <T> T getPOSTResponseFromHTTPRequest(String requestParameter, String jsonBody) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(serverURL))
+                .POST(HttpRequest.BodyPublishers.noBody())
+                .build();
 
-//    getPOSTResponseFromHTTP - recipes
-//    getPUTResponseFromHTTP - recipes
+        try {
+            HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()!=200) {
+                System.out.println("Status Code: " + response.statusCode());
+            }
 
-//    getPOSTResponseFromUserHTTP - create user
-//    getDELETEResponseFromUserHTTP ???
+            switch (requestParameter) {
+                default:
+                    System.out.println("default");
+                    return (T) "default";
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public <T> T getPUTResponseFromHTTPRequest(String requestParameter, String jsonBody) {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(serverURL))
+                .PUT(HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        try {
+            HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()!=200) {
+                System.out.println("Status Code: " + response.statusCode());
+            }
+
+            switch (requestParameter) {
+                default:
+                    System.out.println("default");
+                    return (T) "default";
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 
 
 
@@ -138,11 +182,12 @@ public class RESTClient {
 
     public HttpClient getClient() {
         if (client == null) {
-            client  = HttpClient.newHttpClient();
+            client = HttpClient.newHttpClient();
         }
 
         return client;
     }
+
 
 
 

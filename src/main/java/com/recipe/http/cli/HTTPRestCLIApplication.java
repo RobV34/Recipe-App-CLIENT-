@@ -29,6 +29,7 @@ public class HTTPRestCLIApplication {
 
         String serverURL = args[0];
         String CRUDMethod = args[1];
+        String jsonBody = args.length > 2 ? args[2] : null;
 
         if (serverURL != null && !serverURL.isEmpty()) {
 
@@ -39,8 +40,12 @@ public class HTTPRestCLIApplication {
 
             if (serverURL.matches(".*\\/recipe\\/[A-Za-z0-9]+") && CRUDMethod.equalsIgnoreCase("GET")) {
                 cliApp.getRestClient().getGETResponseFromHTTPRequest("recipe/{recipeName}");
-            } else if(serverURL.matches(".*\\/recipe\\/[A-Za-z0-9]+") && CRUDMethod.equalsIgnoreCase("DELETE")) {
+            } else if (serverURL.matches(".*\\/recipe\\/[A-Za-z0-9]+") && CRUDMethod.equalsIgnoreCase("DELETE")) {
                 cliApp.getRestClient().getDELETEResponseFromHTTPRequest("recipe/{recipeName}");
+            } else if (serverURL.contains("recipe") && CRUDMethod.equalsIgnoreCase("POST")) {
+                cliApp.getRestClient().getPOSTResponseFromHTTPRequest("recipe", jsonBody);
+            } else if (serverURL.contains("recipe") && CRUDMethod.equalsIgnoreCase("PUT")) {
+                cliApp.getRestClient().getPUTResponseFromHTTPRequest("recipe", jsonBody);
             } else if (serverURL.contains("recipe")) {
                 cliApp.getRestClient().getGETResponseFromHTTPRequest("recipe");
             } else if (serverURL.contains("recipes")) {
