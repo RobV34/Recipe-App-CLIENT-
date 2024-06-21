@@ -27,7 +27,7 @@ public class RESTClient {
     private HttpClient client;
 
 
-    //    Recipe
+
     public <T> T getGETResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).build();
 
@@ -127,8 +127,8 @@ public class RESTClient {
 
 
 
-    public <T> T getDELETEResponseFromHTTPRequest(String requestParameter) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(serverURL)).DELETE().build();
+    public <T> T getDELETEResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).DELETE().build();
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -154,9 +154,34 @@ public class RESTClient {
     }
 
 
+    public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, Recipe newRecipe) {
 
-//    getPOSTResponseFromHTTP - recipes
-//    getPUTResponseFromHTTP - recipes
+        ObjectMapper om = new ObjectMapper();
+        String requestBody = "";
+
+        try {
+            requestBody = om.writeValueAsString(newRecipe);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+
+        try {
+            HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()!=200) {
+                System.out.println("Status Code: " + response.statusCode());
+            }
+
+            System.out.println("New recipe added.");
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
 //    getPOSTResponseFromUserHTTP - create user
 //    getDELETEResponseFromUserHTTP ???
