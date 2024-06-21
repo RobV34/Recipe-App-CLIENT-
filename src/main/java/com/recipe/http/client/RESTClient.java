@@ -28,8 +28,8 @@ public class RESTClient {
 
 
     //    Recipe
-    public <T> T getGETResponseFromHTTPRequest(String requestParameter) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(serverURL)).build();
+    public <T> T getGETResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).build();
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -103,7 +103,7 @@ public class RESTClient {
         ObjectMapper om = new ObjectMapper();
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        String urlWithUser = serverURL + "?userId=" + userId;
+        String urlWithUser = serverURL + "/recipe/userMatches?userId=" + userId;
 
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlWithUser)).build();
 
