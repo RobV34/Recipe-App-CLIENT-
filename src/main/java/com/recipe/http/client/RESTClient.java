@@ -6,15 +6,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.recipe.http.domain.Ingredient;
 import com.recipe.http.domain.Recipe;
+import com.recipe.http.domain.User;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RESTClient {
 
@@ -22,9 +27,9 @@ public class RESTClient {
     private HttpClient client;
 
 
-    //    Recipe
-    public <T> T getGETResponseFromHTTPRequest(String requestParameter) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(serverURL)).build();
+
+    public <T> T getGETResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).build();
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
@@ -92,24 +97,26 @@ public class RESTClient {
     }
 
 
-    public <T> T getDELETEResponseFromHTTPRequest(String requestParameter) {
-        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(serverURL)).DELETE().build();
+
+    public List<Recipe> getRecipesForUserIngredients(int userId) throws IOException, InterruptedException {
+
+        ObjectMapper om = new ObjectMapper();
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        String urlWithUser = serverURL + "/recipe/userMatches?userId=" + userId;
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(urlWithUser)).build();
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode()!=200) {
+            if (response.statusCode() != 200) {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
-            switch (requestParameter) {
-                case "recipe/{recipeName}":
-                    System.out.println(response.body());
-                    return (T) response.body();
-                default:
-                    System.out.println("default");
-                    return (T) "default";
-            }
+            List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {});
 
+            System.out.println(recipesForUser);
+            return recipesForUser;
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -120,8 +127,54 @@ public class RESTClient {
 
 
 
-//    getPOSTResponseFromHTTP - recipes
-//    getPUTResponseFromHTTP - recipes
+    public <T> T getDELETEResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).DELETE().build();
+
+        try {
+            HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()!=200) {
+                System.out.println("Status Code: " + response.statusCode());
+            }
+
+            System.out.println("Recipe deleted.");
+
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
+    public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, Recipe newRecipe) {
+
+        ObjectMapper om = new ObjectMapper();
+        String requestBody = "";
+
+        try {
+            requestBody = om.writeValueAsString(newRecipe);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+
+        HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).header("Content-Type", "application/json").POST(HttpRequest.BodyPublishers.ofString(requestBody)).build();
+
+        try {
+            HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()!=200) {
+                System.out.println("Status Code: " + response.statusCode());
+            }
+
+            System.out.println("New recipe added.");
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
 
 //    getPOSTResponseFromUserHTTP - create user
 //    getDELETEResponseFromUserHTTP ???
