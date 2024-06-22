@@ -48,7 +48,7 @@ public class HTTPRestCLIApplication {
 
             Scanner scanner = new Scanner(System.in);
 
-            System.out.println("1. Root Route");
+            System.out.println("1. Recipe Application: Introduction");
             System.out.println("2. Add new user "); // code not added yet
             System.out.println("3. Add new recipe");
             System.out.println("4. Get all recipes");
