@@ -126,7 +126,7 @@ public class HTTPRestCLIApplication {
                     System.out.println("add");
                 case 9:
                     System.out.println("Enter the recipe name: ");
-                    String recipeToDelete = scanner.next();
+                    String recipeToDelete = scanner.nextLine().replaceAll(" ", "%20");
 
                     userChoiceURL = serverURLRoot + "/recipe" + "/" + recipeToDelete;
                     cliApp.getRestClient().getDELETEResponseFromHTTPRequest(userChoiceURL, "/recipe/{recipeName}");
