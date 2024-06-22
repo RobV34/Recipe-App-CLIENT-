@@ -162,15 +162,10 @@ public class HTTPRestCLIApplication {
                     System.out.println("Please enter a valid command (1 - 10).");
 
             }
-
-
             }
-
-
             }
-
-
         }
+
 
     public Boolean userReturnsToMainMenu() {
         System.out.println("Press R to return to the main menu.");

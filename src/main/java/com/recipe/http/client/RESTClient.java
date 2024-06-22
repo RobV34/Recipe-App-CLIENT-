@@ -72,11 +72,14 @@ public class RESTClient {
 
     public List<Recipe> getAllRecipes(String response) throws JsonProcessingException {
         List<Recipe> allRecipes = new ArrayList<>();
+        TypeReference<List<Recipe>> recipeListTypeReference = new TypeReference<List<Recipe>>() {
+        };
 
-        ObjectMapper om = new ObjectMapper();
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        allRecipes = om.readValue(response, new TypeReference<List<Recipe>>() {
-        });
+       try {
+           allRecipes = configureAndReadValue(response, recipeListTypeReference);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
 
         System.out.println(allRecipes);
         return allRecipes;
@@ -86,12 +89,15 @@ public class RESTClient {
 
     public Recipe getRecipeByName(String response) throws JsonProcessingException {
         Recipe recipeSearched = new Recipe();
+        TypeReference<Recipe> recipeTypeReference = new TypeReference<>() {};
 
-        ObjectMapper om = new ObjectMapper();
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        recipeSearched = om.readValue(response, new TypeReference<Recipe>() {});
+        try {
+            recipeSearched = configureAndReadValue(response, recipeTypeReference);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        System.out.println(recipeSearched.getName());
+        System.out.println(recipeSearched);
         return recipeSearched;
 
     }
@@ -115,7 +121,12 @@ public class RESTClient {
 
             List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {});
 
-            System.out.println(recipesForUser);
+            if (recipesForUser.size() == 0) {
+                System.out.println("No recipes found with the list of ingredients given.");
+            } else {
+                System.out.println(recipesForUser);
+            }
+
             return recipesForUser;
 
         } catch (IOException | InterruptedException e) {
@@ -176,10 +187,6 @@ public class RESTClient {
     }
 
 
-//    getPOSTResponseFromUserHTTP - create user
-//    getDELETEResponseFromUserHTTP ???
-
-
 
     public String getServerURL() {
         return serverURL;
@@ -198,20 +205,14 @@ public class RESTClient {
     }
 
 
+    public <T> T configureAndReadValue(String response, TypeReference<T> typeReference) throws JsonProcessingException {
 
+        ObjectMapper om = new ObjectMapper();
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
+        return om.readValue(response, typeReference);
 
-
-
-//    parse Json
-//    private static JsonNode parse(String jsonSrc) throws JsonProcessingException {
-//        return myObjectMapper.readTree(jsonSrc);
-//    }
-//
-//
-//    public static JsonNode toJson(Object object) {
-//        return myObjectMapper.valueToTree(object);
-//    }
+    }
 
 
 
