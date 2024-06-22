@@ -48,6 +48,8 @@ public class HTTPRestCLIApplication {
 
             Scanner scanner = new Scanner(System.in);
 
+            while(true) {
+
             System.out.println("1. Recipe Application: Introduction");
             System.out.println("2. Add new user "); // code not added yet
             System.out.println("3. Add new recipe");
@@ -57,6 +59,7 @@ public class HTTPRestCLIApplication {
             System.out.println("7. Search vegan recipes");
             System.out.println("8. Search recipes without common allergens");
             System.out.println("9. Delete recipe.");
+            System.out.println("10. Exit");
 
             int userChoice = scanner.nextInt();
             scanner.nextLine();
@@ -67,7 +70,9 @@ public class HTTPRestCLIApplication {
                     String userChoiceURL;
                     userChoiceURL = serverURLRoot + "/recipe";
                     cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipe");
-                    break;
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
 
                 case 2:
                     userChoiceURL = serverURLRoot + "/newUser";
@@ -86,7 +91,7 @@ public class HTTPRestCLIApplication {
                         }
                         newRecipeIngredients.add(nextIngredient);
 
-                        }
+                    }
 
                     System.out.println("Enter the recipe instructions: ");
                     String newRecipeInstructions = scanner.nextLine();
@@ -98,12 +103,20 @@ public class HTTPRestCLIApplication {
 
                     userChoiceURL = serverURLRoot + "/newRecipe";
                     cliApp.getRestClient().getPOSTResponseFromHTTPRequest(userChoiceURL, newRecipe);
-                    break;
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
 
                 case 4:
                     userChoiceURL = serverURLRoot + "/recipes";
                     cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipes");
-                    break;
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
 
                 case 5:
                     System.out.println("Enter the recipe name: ");
@@ -111,14 +124,21 @@ public class HTTPRestCLIApplication {
 
                     userChoiceURL = serverURLRoot + "/recipe" + "/" + recipeSearched;
                     cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipe/{recipeName}");
-                    break;
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
 
                 case 6:
                     System.out.println("Enter the user ID: ");
                     int userID = scanner.nextInt();
 
                     cliApp.getRestClient().getRecipesForUserIngredients(userID);
-                    break;
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
 
                 case 7:
                     System.out.println("add");
@@ -130,15 +150,39 @@ public class HTTPRestCLIApplication {
 
                     userChoiceURL = serverURLRoot + "/recipe" + "/" + recipeToDelete;
                     cliApp.getRestClient().getDELETEResponseFromHTTPRequest(userChoiceURL, "/recipe/{recipeName}");
-                    break;
 
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
+                case 10:
+                    scanner.close();
+                    return;
                 default:
-                    System.out.println("default - switch clause");
+                    System.out.println("Please enter a valid command (1 - 10).");
+
+            }
+
+
+            }
 
 
             }
 
 
         }
+
+    public Boolean userReturnsToMainMenu() {
+        System.out.println("Press R to return to the main menu.");
+
+        Scanner scanner = new Scanner(System.in);
+        String returnKey = scanner.next();
+        if (returnKey.equalsIgnoreCase("r")) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
+
 }
