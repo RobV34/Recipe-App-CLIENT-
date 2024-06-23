@@ -1,26 +1,23 @@
+
 package com.recipe.http.cli;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.recipe.http.client.RESTClient;
 import com.recipe.http.domain.Ingredient;
 import com.recipe.http.domain.Recipe;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-
-import java.io.IOException;
 
 public class HTTPRestCLIApplication {
 
     private RESTClient restClient;
 
-
     public RESTClient getRestClient() {
         if (restClient == null) {
             restClient = new RESTClient();
         }
-
         return restClient;
     }
 
@@ -29,29 +26,18 @@ public class HTTPRestCLIApplication {
     }
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        for (String arg : args) {
-            System.out.println(arg);
-        }
-
         HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
 
         String serverURLRoot = "http://localhost:8080";
+        RESTClient restClient = cliApp.getRestClient();
+        restClient.setServerURL(serverURLRoot);
+        cliApp.setRestClient(restClient);
 
+        Scanner scanner = new Scanner(System.in);
 
-        if (serverURLRoot != null && !serverURLRoot.isEmpty()) {
-
-            RESTClient restClient = new RESTClient();
-            restClient.setServerURL(serverURLRoot);
-
-            cliApp.setRestClient(restClient);
-
-
-            Scanner scanner = new Scanner(System.in);
-
-            while(true) {
-
+        while (true) {
             System.out.println("1. Recipe Application: Introduction");
-            System.out.println("2. Add new user "); // code not added yet
+            System.out.println("2. Add new user ");
             System.out.println("3. Add new recipe");
             System.out.println("4. Get all recipes");
             System.out.println("5. Get recipe by recipe name");
@@ -64,125 +50,99 @@ public class HTTPRestCLIApplication {
             int userChoice = scanner.nextInt();
             scanner.nextLine();
 
-
+            String userChoiceURL;
             switch (userChoice) {
                 case 1:
-                    String userChoiceURL;
                     userChoiceURL = serverURLRoot + "/recipe";
                     cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipe");
-                    if (cliApp.userReturnsToMainMenu()) {
-                        break;
-                    }
+                    break;
 
                 case 2:
                     userChoiceURL = serverURLRoot + "/newUser";
+                    break;
+
                 case 3:
-                    System.out.println("Enter the recipe name: ");
-                    String newRecipeName = scanner.nextLine();
-
-                    List<Ingredient> newRecipeIngredients = new ArrayList<>();
-                    while (true) {
-                        System.out.println("1. Enter an ingredient (done to quit): ");
-                        String recipeIngredientName = scanner.nextLine();
-                        Ingredient nextIngredient = new Ingredient(recipeIngredientName);
-
-                        if (recipeIngredientName.equalsIgnoreCase("done")) {
-                            break;
-                        }
-                        newRecipeIngredients.add(nextIngredient);
-
-                    }
-
-                    System.out.println("Enter the recipe instructions: ");
-                    String newRecipeInstructions = scanner.nextLine();
-
-                    Recipe newRecipe = new Recipe();
-                    newRecipe.setName(newRecipeName);
-                    newRecipe.setIngredients(newRecipeIngredients);
-                    newRecipe.setInstructions(newRecipeInstructions);
-
-                    userChoiceURL = serverURLRoot + "/newRecipe";
-                    cliApp.getRestClient().getPOSTResponseFromHTTPRequest(userChoiceURL, newRecipe);
-
-                    if (cliApp.userReturnsToMainMenu()) {
-                        break;
-                    }
-
+                    cliApp.addNewRecipe(scanner, serverURLRoot);
+                    break;
 
                 case 4:
                     userChoiceURL = serverURLRoot + "/recipes";
                     cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipes");
-
-                    if (cliApp.userReturnsToMainMenu()) {
-                        break;
-                    }
-
+                    break;
 
                 case 5:
                     System.out.println("Enter the recipe name: ");
-                    String recipeSearched = scanner.next();
-
-                    userChoiceURL = serverURLRoot + "/recipe" + "/" + recipeSearched;
+                    String recipeSearched = scanner.nextLine();
+                    userChoiceURL = serverURLRoot + "/recipe/" + recipeSearched;
                     cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipe/{recipeName}");
-
-                    if (cliApp.userReturnsToMainMenu()) {
-                        break;
-                    }
-
+                    break;
 
                 case 6:
                     System.out.println("Enter the user ID: ");
                     int userID = scanner.nextInt();
-
                     cliApp.getRestClient().getRecipesForUserIngredients(userID);
-
-                    if (cliApp.userReturnsToMainMenu()) {
-                        break;
-                    }
+                    break;
 
                 case 7:
                     System.out.println("add");
+                    break;
+
                 case 8:
                     System.out.println("add");
+                    break;
+
                 case 9:
                     System.out.println("Enter the recipe name: ");
                     String recipeToDelete = scanner.nextLine().replaceAll(" ", "%20");
-
-                    userChoiceURL = serverURLRoot + "/recipe" + "/" + recipeToDelete;
+                    userChoiceURL = serverURLRoot + "/recipe/" + recipeToDelete;
                     cliApp.getRestClient().getDELETEResponseFromHTTPRequest(userChoiceURL, "/recipe/{recipeName}");
-
-                    if (cliApp.userReturnsToMainMenu()) {
-                        break;
-                    }
+                    break;
 
                 case 10:
                     scanner.close();
                     return;
+
                 default:
                     System.out.println("Please enter a valid command (1 - 10).");
-
+                    break;
             }
 
-
+            if (cliApp.userReturnsToMainMenu(scanner)) {
+                continue;
             }
-
-
-            }
-
-
-        }
-
-    public Boolean userReturnsToMainMenu() {
-        System.out.println("Press R to return to the main menu.");
-
-        Scanner scanner = new Scanner(System.in);
-        String returnKey = scanner.next();
-        if (returnKey.equalsIgnoreCase("r")) {
-            return true;
-        }
-        else {
-            return false;
         }
     }
 
+    private void addNewRecipe(Scanner scanner, String serverURLRoot) throws IOException, InterruptedException {
+        System.out.println("Enter the recipe name: ");
+        String newRecipeName = scanner.nextLine();
+
+        List<Ingredient> newRecipeIngredients = new ArrayList<>();
+        while (true) {
+            System.out.println("Enter an ingredient (type 'done' to quit): ");
+            String recipeIngredientName = scanner.nextLine();
+            if (recipeIngredientName.equalsIgnoreCase("done")) {
+                break;
+            }
+            Ingredient nextIngredient = new Ingredient(recipeIngredientName);
+            newRecipeIngredients.add(nextIngredient);
+        }
+
+        System.out.println("Enter the recipe instructions: ");
+        String newRecipeInstructions = scanner.nextLine();
+
+        Recipe newRecipe = new Recipe();
+        newRecipe.setName(newRecipeName);
+        newRecipe.setIngredients(newRecipeIngredients);
+        newRecipe.setInstructions(newRecipeInstructions);
+
+        String userChoiceURL = serverURLRoot + "/newRecipe";
+        getRestClient().getPOSTResponseFromHTTPRequest(userChoiceURL, newRecipe);
+    }
+
+    private boolean userReturnsToMainMenu(Scanner scanner) {
+        System.out.println("Press R to return to the main menu.");
+        String returnKey = scanner.next();
+        return returnKey.equalsIgnoreCase("r");
+    }
 }
