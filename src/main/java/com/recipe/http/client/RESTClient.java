@@ -158,13 +158,13 @@ public class RESTClient {
     }
 
 
-    public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, Recipe newRecipe) {
+    public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, T newObjectFromUser) {
 
         ObjectMapper om = new ObjectMapper();
         String requestBody = "";
 
         try {
-            requestBody = om.writeValueAsString(newRecipe);
+            requestBody = om.writeValueAsString(newObjectFromUser);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -177,7 +177,16 @@ public class RESTClient {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
-            System.out.println("New recipe added.");
+            if (newObjectFromUser instanceof Recipe) {
+                TypeReference<Recipe> typeReference = new TypeReference<Recipe>() {};
+                System.out.println("New recipe added.");
+                return (T) configureAndReadValue(response.body(), typeReference);
+            } else {
+
+                TypeReference<User> typeReference = new TypeReference<User>() {};
+                System.out.println("New user added.");
+                return (T) configureAndReadValue(response.body(), typeReference);
+            }
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

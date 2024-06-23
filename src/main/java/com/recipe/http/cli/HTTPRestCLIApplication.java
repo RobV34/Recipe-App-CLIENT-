@@ -1,9 +1,9 @@
 package com.recipe.http.cli;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.recipe.http.client.RESTClient;
 import com.recipe.http.domain.Ingredient;
 import com.recipe.http.domain.Recipe;
+import com.recipe.http.domain.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +76,34 @@ public class HTTPRestCLIApplication {
 
                 case 2:
                     userChoiceURL = serverURLRoot + "/newUser";
+                    System.out.println("Enter the user ID: ");
+                    int userId = scanner.nextInt();
+
+                    List<Ingredient> userIngredients = new ArrayList<>();
+                    while (true) {
+                        System.out.println("1. Enter an ingredient in your fridge/cupboard (done to quit): ");
+                        String userIngredientName = scanner.nextLine();
+                        Ingredient nextIngredient = new Ingredient(userIngredientName);
+
+                        if (userIngredientName.equalsIgnoreCase("done")) {
+                            break;
+                        }
+                        userIngredients.add(nextIngredient);
+                    }
+
+                    User newUser = new User();
+                    newUser.setUserId(userId);
+                    newUser.setUserCurrentIngredients(userIngredients);
+
+                    userChoiceURL = serverURLRoot + "/newUser";
+                    cliApp.getRestClient().getPOSTResponseFromHTTPRequest(userChoiceURL, newUser);
+
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
+                    System.out.println();
                 case 3:
                     System.out.println("Enter the recipe name: ");
                     String newRecipeName = scanner.nextLine();
