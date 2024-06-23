@@ -78,6 +78,7 @@ public class HTTPRestCLIApplication {
                     userChoiceURL = serverURLRoot + "/newUser";
                     System.out.println("Enter the user ID: ");
                     int userId = scanner.nextInt();
+                    scanner.nextLine();
 
                     List<Ingredient> userIngredients = new ArrayList<>();
                     while (true) {
@@ -184,6 +185,7 @@ public class HTTPRestCLIApplication {
                     }
 
                 case 10:
+                    System.out.println("Thank you for using the Recipe App.");
                     scanner.close();
                     return;
                 default:
