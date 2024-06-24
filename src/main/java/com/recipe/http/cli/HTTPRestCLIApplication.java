@@ -172,7 +172,13 @@ public class HTTPRestCLIApplication {
                 case 7:
                     System.out.println("add");
                 case 8:
-                    System.out.println("add");
+                    userChoiceURL = serverURLRoot + "/recipe/noCommonAllergens";
+                    cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipe/noCommonAllergens");
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
                 case 9:
                     System.out.println("Enter the recipe name: ");
                     String recipeToDelete = scanner.nextLine().replaceAll(" ", "%20");

@@ -41,14 +41,14 @@ public class RESTClient {
                 case "recipe":
                     String responseBody = getStringResponse(response.body());
                     return (T) responseBody;
-                case "recipes":
+                case "recipes", "recipe/noCommonAllergens":
                     List<Recipe> allRecipesResponseBody = getAllRecipes(response.body());
                     return (T) allRecipesResponseBody;
                 case "recipe/{recipeName}":
                     Recipe singleRecipeSearched = getRecipeByName(response.body());
                     return (T) singleRecipeSearched;
                 default:
-                    System.out.println("default");
+                    System.out.println("No URL found.");
                     return (T) "default";
             }
 
