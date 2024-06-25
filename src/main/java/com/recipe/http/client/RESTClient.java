@@ -49,7 +49,7 @@ public class RESTClient {
                     return (T) singleRecipeSearched;
                 default:
                     System.out.println("No URL found.");
-                    return (T) "default";
+                    return (T) "No URL found.";
             }
 
 
