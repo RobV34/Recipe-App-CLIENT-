@@ -43,9 +43,11 @@ public class RESTClient {
                     return (T) responseBody;
                 case "recipes", "recipe/noCommonAllergens":
                     List<Recipe> allRecipesResponseBody = getAllRecipes(response.body());
+                    generateFormattedRecipes(allRecipesResponseBody);
                     return (T) allRecipesResponseBody;
                 case "recipe/{recipeName}":
                     Recipe singleRecipeSearched = getRecipeByName(response.body());
+                    generateSingleFormattedRecipe(singleRecipeSearched);
                     return (T) singleRecipeSearched;
                 default:
                     System.out.println("No URL found.");
@@ -81,7 +83,6 @@ public class RESTClient {
            e.printStackTrace();
        }
 
-        System.out.println(allRecipes);
         return allRecipes;
 
     }
@@ -97,7 +98,6 @@ public class RESTClient {
             e.printStackTrace();
         }
 
-        System.out.println(recipeSearched);
         return recipeSearched;
 
     }
@@ -179,12 +179,12 @@ public class RESTClient {
 
             if (newObjectFromUser instanceof Recipe) {
                 TypeReference<Recipe> typeReference = new TypeReference<Recipe>() {};
-                System.out.println("New recipe added.");
+                System.out.println("New recipe added: " + ((Recipe) newObjectFromUser).getName());
                 return (T) configureAndReadValue(response.body(), typeReference);
             } else {
 
                 TypeReference<User> typeReference = new TypeReference<User>() {};
-                System.out.println("New user added.");
+                System.out.println("New user added with ID: " + ((User) newObjectFromUser).getUserId());
                 return (T) configureAndReadValue(response.body(), typeReference);
             }
 
@@ -222,6 +222,41 @@ public class RESTClient {
         return om.readValue(response, typeReference);
 
     }
+
+        public void generateFormattedRecipes(List<Recipe> listOfRecipes) {
+
+        if (listOfRecipes.size() < 1) {
+            System.out.println("No recipes in the system.");
+        }
+
+        for(Recipe recipe : listOfRecipes ) {
+            System.out.println(recipe.getName());
+            System.out.print("Ingredients: ");
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                System.out.print(ingredient + ", ");
+            }
+            System.out.println();
+            System.out.println("Instructions: " + recipe.getInstructions());
+            System.out.println("Difficulty Level: " + recipe.getDifficulty());
+            System.out.println();
+        }
+        }
+
+        public void generateSingleFormattedRecipe(Recipe recipe) {
+
+            System.out.println(recipe.getName());
+            System.out.print("Ingredients: ");
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                System.out.print(ingredient + ", ");
+            }
+            System.out.println();
+            System.out.println("Instructions: " + recipe.getInstructions());
+            System.out.println("Difficulty Level: " + recipe.getDifficulty());
+            System.out.println();
+
+        }
+
+
 
 
 

@@ -13,6 +13,7 @@ import java.io.IOException;
 
 public class HTTPRestCLIApplication {
 
+
     private RESTClient restClient;
 
 
@@ -54,7 +55,7 @@ public class HTTPRestCLIApplication {
             System.out.println("5. Get recipe by recipe name");
             System.out.println("6. Search recipes with user ingredient list");
             System.out.println("7. Search recipes without common allergens");
-            System.out.println("8. Delete recipe.");
+            System.out.println("8. Delete recipe");
             System.out.println("9. Exit");
 
             int userChoice = scanner.nextInt();
@@ -188,7 +189,7 @@ public class HTTPRestCLIApplication {
 
                 case 8:
                     System.out.println("Enter the recipe name: ");
-                    String recipeToDelete = scanner.nextLine().replaceAll(" ", "%20");
+                    String recipeToDelete = scanner.nextLine().replaceAll(" ", "%20").toLowerCase();
 
                     userChoiceURL = serverURLRoot + "/recipe" + "/" + recipeToDelete;
                     cliApp.getRestClient().getDELETEResponseFromHTTPRequest(userChoiceURL, "/recipe/{recipeName}");
