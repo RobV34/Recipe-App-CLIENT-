@@ -41,15 +41,17 @@ public class RESTClient {
                 case "recipe":
                     String responseBody = getStringResponse(response.body());
                     return (T) responseBody;
-                case "recipes":
+                case "recipes", "recipe/noCommonAllergens":
                     List<Recipe> allRecipesResponseBody = getAllRecipes(response.body());
+                    generateFormattedRecipes(allRecipesResponseBody);
                     return (T) allRecipesResponseBody;
                 case "recipe/{recipeName}":
                     Recipe singleRecipeSearched = getRecipeByName(response.body());
+                    generateSingleFormattedRecipe(singleRecipeSearched);
                     return (T) singleRecipeSearched;
                 default:
-                    System.out.println("default");
-                    return (T) "default";
+                    System.out.println("No URL found.");
+                    return (T) "No URL found.";
             }
 
 
@@ -72,13 +74,15 @@ public class RESTClient {
 
     public List<Recipe> getAllRecipes(String response) throws JsonProcessingException {
         List<Recipe> allRecipes = new ArrayList<>();
+        TypeReference<List<Recipe>> recipeListTypeReference = new TypeReference<List<Recipe>>() {
+        };
 
-        ObjectMapper om = new ObjectMapper();
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        allRecipes = om.readValue(response, new TypeReference<List<Recipe>>() {
-        });
+       try {
+           allRecipes = configureAndReadValue(response, recipeListTypeReference);
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
 
-        System.out.println(allRecipes);
         return allRecipes;
 
     }
@@ -86,12 +90,14 @@ public class RESTClient {
 
     public Recipe getRecipeByName(String response) throws JsonProcessingException {
         Recipe recipeSearched = new Recipe();
+        TypeReference<Recipe> recipeTypeReference = new TypeReference<>() {};
 
-        ObjectMapper om = new ObjectMapper();
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        recipeSearched = om.readValue(response, new TypeReference<Recipe>() {});
+        try {
+            recipeSearched = configureAndReadValue(response, recipeTypeReference);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-        System.out.println(recipeSearched.getName());
         return recipeSearched;
 
     }
@@ -115,7 +121,12 @@ public class RESTClient {
 
             List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {});
 
-            System.out.println(recipesForUser);
+            if (recipesForUser.size() == 0) {
+                System.out.println("No recipes found with the list of ingredients given.");
+            } else {
+                System.out.println(recipesForUser);
+            }
+
             return recipesForUser;
 
         } catch (IOException | InterruptedException e) {
@@ -147,13 +158,13 @@ public class RESTClient {
     }
 
 
-    public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, Recipe newRecipe) {
+    public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, T newObjectFromUser) {
 
         ObjectMapper om = new ObjectMapper();
         String requestBody = "";
 
         try {
-            requestBody = om.writeValueAsString(newRecipe);
+            requestBody = om.writeValueAsString(newObjectFromUser);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -166,7 +177,16 @@ public class RESTClient {
                 System.out.println("Status Code: " + response.statusCode());
             }
 
-            System.out.println("New recipe added.");
+            if (newObjectFromUser instanceof Recipe) {
+                TypeReference<Recipe> typeReference = new TypeReference<Recipe>() {};
+                System.out.println("New recipe added: " + ((Recipe) newObjectFromUser).getName());
+                return (T) configureAndReadValue(response.body(), typeReference);
+            } else {
+
+                TypeReference<User> typeReference = new TypeReference<User>() {};
+                System.out.println("New user added with ID: " + ((User) newObjectFromUser).getUserId());
+                return (T) configureAndReadValue(response.body(), typeReference);
+            }
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -174,10 +194,6 @@ public class RESTClient {
 
         return null;
     }
-
-
-//    getPOSTResponseFromUserHTTP - create user
-//    getDELETEResponseFromUserHTTP ???
 
 
 
@@ -198,20 +214,49 @@ public class RESTClient {
     }
 
 
+    public <T> T configureAndReadValue(String response, TypeReference<T> typeReference) throws JsonProcessingException {
+
+        ObjectMapper om = new ObjectMapper();
+        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        return om.readValue(response, typeReference);
+
+    }
+
+        public void generateFormattedRecipes(List<Recipe> listOfRecipes) {
+
+        if (listOfRecipes.size() < 1) {
+            System.out.println("No recipes in the system.");
+        }
+
+        for(Recipe recipe : listOfRecipes ) {
+            System.out.println(recipe.getName());
+            System.out.print("Ingredients: ");
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                System.out.print(ingredient + ", ");
+            }
+            System.out.println();
+            System.out.println("Instructions: " + recipe.getInstructions());
+            System.out.println("Difficulty Level: " + recipe.getDifficulty());
+            System.out.println();
+        }
+        }
+
+        public void generateSingleFormattedRecipe(Recipe recipe) {
+
+            System.out.println(recipe.getName());
+            System.out.print("Ingredients: ");
+            for (Ingredient ingredient : recipe.getIngredients()) {
+                System.out.print(ingredient + ", ");
+            }
+            System.out.println();
+            System.out.println("Instructions: " + recipe.getInstructions());
+            System.out.println("Difficulty Level: " + recipe.getDifficulty());
+            System.out.println();
+
+        }
 
 
-
-
-
-//    parse Json
-//    private static JsonNode parse(String jsonSrc) throws JsonProcessingException {
-//        return myObjectMapper.readTree(jsonSrc);
-//    }
-//
-//
-//    public static JsonNode toJson(Object object) {
-//        return myObjectMapper.valueToTree(object);
-//    }
 
 
 

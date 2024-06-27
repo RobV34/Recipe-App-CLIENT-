@@ -7,13 +7,16 @@ public class Recipe {
     private List<Ingredient> ingredients;
     private String instructions;
 
+    private int difficulty;
+
     public Recipe() {
     }
 
-    public Recipe(String name, List<Ingredient> ingredients, String instructions) {
+    public Recipe(String name, List<Ingredient> ingredients, String instructions, int difficulty) {
         this.name = name;
         this.ingredients = ingredients;
         this.instructions = instructions;
+        this.difficulty = difficulty;
     }
 
     public String getName() {
@@ -40,12 +43,21 @@ public class Recipe {
         this.instructions = instructions;
     }
 
+    public int getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(int difficulty) {
+        this.difficulty = difficulty;
+    }
+
     @Override
     public String toString() {
         return "Recipe{" +
                 "name='" + name + '\'' +
                 ", ingredients=" + ingredients +
                 ", instructions='" + instructions + '\'' +
+                ", difficulty='" + difficulty + '\'' +
                 '}';
     }
 
