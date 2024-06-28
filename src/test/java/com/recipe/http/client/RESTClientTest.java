@@ -34,8 +34,8 @@ public class RESTClientTest {
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         restClient = new RESTClient();
-        restClient.setClient(mockHttpClient);
-        restClient.setServerURL("http://example.com/api"); // Replace with your server URL
+        restClient.getClient();
+        restClient.setServerURL("http://localhost:8080");
     }
 
     @Test
