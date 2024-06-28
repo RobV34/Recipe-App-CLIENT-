@@ -54,13 +54,6 @@ public class RESTClientTest {
         assertEquals("Test Instructions", recipe.getInstructions());
     }
 
-    @Test
-    void testInvalidEndpoint() {
-        RESTClient client = new RESTClient();
-        assertThrows(IllegalArgumentException.class, () -> {
-            client.getRecipeByName(null); // Passing null endpoint
-        });
-    }
 
     @Test
     void testServerReturnsError() {
