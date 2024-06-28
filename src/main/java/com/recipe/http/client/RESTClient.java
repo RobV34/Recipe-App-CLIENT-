@@ -198,6 +198,11 @@ public class RESTClient {
     }
 
 
+    public void setClient(HttpClient client) {
+        this.client = client;
+    }
+
+
 
 
 
