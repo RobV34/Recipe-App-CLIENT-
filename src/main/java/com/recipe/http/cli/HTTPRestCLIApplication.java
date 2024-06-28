@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.recipe.http.client.RESTClient;
 import com.recipe.http.domain.Ingredient;
 import com.recipe.http.domain.Recipe;
+import com.recipe.http.domain.User;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -78,12 +79,44 @@ public class HTTPRestCLIApplication {
                         continue;
 
                     case 2:
-                        userChoiceURL = serverURLRoot + "/newUser";
-                        // Add user implementation here
-                        if (cliApp.userReturnsToMainMenu()) {
+                    userChoiceURL = serverURLRoot + "/newUser";
+                    System.out.println("Enter the user ID: ");
+                    int userId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    System.out.println("Enter the first name: ");
+                    String firstName = scanner.nextLine();
+
+                    System.out.println("Enter the last name: ");
+                    String lastName = scanner.nextLine();
+
+                    List<Ingredient> userIngredients = new ArrayList<>();
+                    while (true) {
+                        System.out.println("Enter an ingredient in your fridge/cupboard (done to quit): ");
+                        String userIngredientName = scanner.nextLine();
+                        Ingredient nextIngredient = new Ingredient(userIngredientName);
+
+                        if (userIngredientName.equalsIgnoreCase("done")) {
                             break;
                         }
-                        continue;
+                        userIngredients.add(nextIngredient);
+                    }
+
+                    User newUser = new User();
+                    newUser.setUserId(userId);
+                    newUser.setFirstName(firstName);
+                    newUser.setLastName(lastName);
+                    newUser.setUserCurrentIngredients(userIngredients);
+
+                    userChoiceURL = serverURLRoot + "/newUser";
+                    cliApp.getRestClient().getPOSTResponseFromHTTPRequest(userChoiceURL, newUser);
+
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
+
+                    continue; 
 
                     case 3:
                         System.out.println("Enter the recipe name: ");
