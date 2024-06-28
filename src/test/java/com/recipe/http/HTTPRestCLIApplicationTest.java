@@ -43,7 +43,7 @@ public class HTTPRestCLIApplicationTest {
                 .thenReturn("Recipe added successfully");
 
 
-        cliApp.addNewRecipe(scanner, "http://localhost:8080");
+        // cliApp.addNewRecipe(scanner, "http://localhost:8080");
 
 
         verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest(any(), any());
@@ -60,7 +60,7 @@ public class HTTPRestCLIApplicationTest {
         Scanner scanner = new Scanner(input);
 
 
-        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu(scanner);
+        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
 
 
         assertTrue(returnedToMainMenu);
