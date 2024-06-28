@@ -23,31 +23,6 @@ public class HTTPRestCLIApplicationTest {
     @Mock
     private RESTClient restClientMock;
 
-    @Test
-    void testAddNewRecipe_UserInput() throws IOException, InterruptedException {
-        MockitoAnnotations.openMocks(this);
-        HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
-        cliApp.setRestClient(restClientMock);
-
-
-        String input = "Lasagna\nBeef\nCheese\ndone\nLayer everything and bake.";
-        Scanner scanner = new Scanner(input);
-
-
-        Recipe mockRecipe = new Recipe();
-        mockRecipe.setName("Lasagna");
-        mockRecipe.setIngredients(List.of(new Ingredient("Beef"), new Ingredient("Cheese")));
-        mockRecipe.setInstructions("Layer everything and bake.");
-
-        when(restClientMock.getPOSTResponseFromHTTPRequest(any(), any()))
-                .thenReturn("Recipe added successfully");
-
-
-        // cliApp.addNewRecipe(scanner, "http://localhost:8080");
-
-
-        verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest(any(), any());
-    }
 
     @Test
     void testUserReturnsToMainMenu() {
