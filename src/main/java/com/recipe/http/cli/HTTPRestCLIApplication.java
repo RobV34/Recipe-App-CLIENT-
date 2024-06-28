@@ -113,7 +113,7 @@ public class HTTPRestCLIApplication {
         }
     }
 
-    private void addNewRecipe(Scanner scanner, String serverURLRoot) throws IOException, InterruptedException {
+    public void addNewRecipe(Scanner scanner, String serverURLRoot) throws IOException, InterruptedException {
         System.out.println("Enter the recipe name: ");
         String newRecipeName = scanner.nextLine();
 
@@ -140,7 +140,7 @@ public class HTTPRestCLIApplication {
         getRestClient().getPOSTResponseFromHTTPRequest(userChoiceURL, newRecipe);
     }
 
-    private boolean userReturnsToMainMenu(Scanner scanner) {
+    public boolean userReturnsToMainMenu(Scanner scanner) {
         System.out.println("Press R to return to the main menu.");
         String returnKey = scanner.next();
         return returnKey.equalsIgnoreCase("r");
