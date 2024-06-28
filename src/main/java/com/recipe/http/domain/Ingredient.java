@@ -19,7 +19,7 @@ public class Ingredient {
     }
 
     public Boolean compareIngredientWithCommonAllergensList(){
-        String[] commonAllergenList = {"peanuts", "milk", "eggs", "pecans", "walnuts", "soy", "almonds"};
+        String[] commonAllergenList = {"peanuts", "milk", "eggs", "pecans", "walnuts", "soy", "almonds", "cheese", "mustard", "fish", "sesame", "wheat"};
 
         Boolean isOnAllergenList = false;
 
