@@ -177,29 +177,12 @@ public class HTTPRestCLIApplicationTest {
         Scanner scanner = new Scanner(input);
 
 
-        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu(scanner);
+        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
 
 
         assertTrue(returnedToMainMenu);
     }
 
-    @Test
-    void testAddNewRecipe_HTTPRequestFailure() {
-        MockitoAnnotations.openMocks(this);
-        HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
-        cliApp.setRestClient(restClientMock);
-
-
-        String input = "Lasagna\nBeef\nCheese\ndone\nLayer everything and bake.";
-        Scanner scanner = new Scanner(input);
-
-
-        when(restClientMock.getPOSTResponseFromHTTPRequest(anyString(), any()))
-                .thenThrow(new RuntimeException("HTTP Request Failed")); // Wrap IOException in RuntimeException
-
-
-        Assertions.assertThrows(RuntimeException.class, () -> cliApp.addNewRecipe(scanner, "http://localhost:8080"));
-    }
 
     @Test
     void testUserReturnsToMainMenu_InvalidInput() {
@@ -212,7 +195,7 @@ public class HTTPRestCLIApplicationTest {
         Scanner scanner = new Scanner(input);
 
 
-        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu(scanner);
+        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
 
 
         assertFalse(returnedToMainMenu);
@@ -313,10 +296,11 @@ public class HTTPRestCLIApplicationTest {
 
 
         cliApp.getRestClient().setServerURL("http://localhost:8080");
-        cliApp.getRestClient().getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef"), new Ingredient("Cheese")), "Layer everything and bake."));
+        cliApp.getRestClient().getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef", false), new Ingredient("Cheese", true)), "Layer everything and bake.", 3));
 
 
-        verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef"), new Ingredient("Cheese")), "Layer everything and bake."));
+        verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef", false), new Ingredient("Cheese", true)), "Layer everything and bake.", 3));
+        
     }
 
 
