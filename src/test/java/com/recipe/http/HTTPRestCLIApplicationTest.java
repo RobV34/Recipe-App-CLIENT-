@@ -296,10 +296,10 @@ public class HTTPRestCLIApplicationTest {
 
 
         cliApp.getRestClient().setServerURL("http://localhost:8080");
-        cliApp.getRestClient().getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef"), new Ingredient("Cheese")), "Layer everything and bake.", 3);
+        cliApp.getRestClient().getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef"), new Ingredient("Cheese")), "Layer everything and bake.", 3));
 
 
-        verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef"), new Ingredient("Cheese")), "Layer everything and bake.", 3);
+        verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", new Recipe("Lasagna", List.of(new Ingredient("Beef"), new Ingredient("Cheese")), "Layer everything and bake.", 3));
         
     }
 
