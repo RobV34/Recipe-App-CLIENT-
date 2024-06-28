@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.recipe.http.client.RESTClient;
 import com.recipe.http.domain.Ingredient;
 import com.recipe.http.domain.Recipe;
+import com.recipe.http.domain.User;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
