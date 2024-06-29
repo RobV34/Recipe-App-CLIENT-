@@ -115,19 +115,29 @@ public class RESTClient {
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
+
             if (response.statusCode() != 200) {
+                String errorMessage = getErrorMessageFromResponse(response.body());
+                if (errorMessage.contains("\"selectedUser\" is null")) {
+                    System.out.println("User with ID " + userId + " was not found.");
+                    return null;
+                }
+
                 System.out.println("Status Code: " + response.statusCode());
-            }
 
-            List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {});
-
-            if (recipesForUser.size() == 0) {
-                System.out.println("No recipes found with the list of ingredients given.");
             } else {
-                System.out.println(recipesForUser);
-            }
 
-            return recipesForUser;
+                List<Recipe> recipesForUser = om.readValue(response.body(), new TypeReference<List<Recipe>>() {
+                });
+
+                if (recipesForUser.size() == 0) {
+                    System.out.println("No recipes found with the list of ingredients given.");
+                } else {
+                    generateFormattedRecipes(recipesForUser);
+                }
+
+                return recipesForUser;
+            }
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -138,24 +148,25 @@ public class RESTClient {
 
 
 
-    public <T> T getDELETEResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
+    public String getDELETEResponseFromHTTPRequest(String userChoiceURL, String requestParameter) {
         HttpRequest request = HttpRequest.newBuilder().uri(URI.create(userChoiceURL)).DELETE().build();
 
         try {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode()!=200) {
-                System.out.println("Status Code: " + response.statusCode());
+            if (response.statusCode() == 200) {
+                System.out.println(response.body());
+                return response.body();
+            } else {
+                System.out.println("Error: " + response.statusCode());
+                return "Error deleting recipe";
             }
-
-            System.out.println("Recipe deleted.");
-
-
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
+            return "Exception occurred while deleting recipe";
         }
 
-        return null;
     }
+
 
 
     public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, T newObjectFromUser) {
@@ -255,6 +266,18 @@ public class RESTClient {
             System.out.println();
 
         }
+
+    public String getErrorMessageFromResponse(String response) {
+        ObjectMapper om = new ObjectMapper();
+        try {
+            JsonNode rootNode = om.readTree(response);
+            JsonNode messageNode = rootNode.path("message");
+            return messageNode.asText();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 
