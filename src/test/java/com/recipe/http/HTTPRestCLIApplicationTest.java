@@ -58,7 +58,7 @@ void testUserReturnsToMainMenu() {
     cliApp.setRestClient(restClientMock);
 
     String input = "r";
-    System.setIn(new ByteArrayInputStream(input.getBytes())); // Set System.in to the test input
+    System.setIn(new ByteArrayInputStream(input.getBytes())); 
 
     boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
 
