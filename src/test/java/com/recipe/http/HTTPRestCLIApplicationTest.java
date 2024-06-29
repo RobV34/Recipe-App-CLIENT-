@@ -49,21 +49,22 @@ public class HTTPRestCLIApplicationTest {
 
         verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest(anyString(), any());
     }
+
+    
+
+    @Test
+void testUserReturnsToMainMenu() {
+    MockitoAnnotations.openMocks(this);
+    HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
+    cliApp.setRestClient(restClientMock);
+
+    String input = "r";
+    System.setIn(new ByteArrayInputStream(input.getBytes())); 
+
+    boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
+
+    assertTrue(returnedToMainMenu);
 }
-
-//     @Test
-// void testUserReturnsToMainMenu() {
-//     MockitoAnnotations.openMocks(this);
-//     HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
-//     cliApp.setRestClient(restClientMock);
-
-//     String input = "r";
-//     System.setIn(new ByteArrayInputStream(input.getBytes())); 
-
-//     boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
-
-//     assertTrue(returnedToMainMenu);
-// }
 
 
     @Test
