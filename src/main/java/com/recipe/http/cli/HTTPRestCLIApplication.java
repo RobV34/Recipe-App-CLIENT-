@@ -49,15 +49,14 @@ public class HTTPRestCLIApplication {
 
             while (true) {
                 System.out.println("1. Recipe Application: Introduction");
-                System.out.println("2. Add new user "); // code not added yet
-                System.out.println("3. Add new recipe");
-                System.out.println("4. Get all recipes");
-                System.out.println("5. Get recipe by recipe name");
-                System.out.println("6. Search recipes with user ingredient list");
-                System.out.println("7. Search vegan recipes");
-                System.out.println("8. Search recipes without common allergens");
-                System.out.println("9. Delete recipe.");
-                System.out.println("10. Exit");
+            System.out.println("2. Add new user ");
+            System.out.println("3. Add new recipe");
+            System.out.println("4. Get all recipes");
+            System.out.println("5. Get recipe by recipe name");
+            System.out.println("6. Search recipes with user ingredient list");
+            System.out.println("7. Search recipes without common allergens");
+            System.out.println("8. Delete recipe");
+            System.out.println("9. Exit");
 
                 int userChoice = 0;
                 try {
@@ -210,20 +209,15 @@ public class HTTPRestCLIApplication {
                         continue;
 
                     case 7:
-                        System.out.println("Search vegan recipes (not yet implemented).");
-                        if (cliApp.userReturnsToMainMenu()) {
-                            break;
-                        }
+                       userChoiceURL = serverURLRoot + "/recipe/noCommonAllergens";
+                    cliApp.getRestClient().getGETResponseFromHTTPRequest(userChoiceURL, "recipe/noCommonAllergens");
+
+                    if (cliApp.userReturnsToMainMenu()) {
+                        break;
+                    }
                         continue;
 
                     case 8:
-                        System.out.println("Search recipes without common allergens (not yet implemented).");
-                        if (cliApp.userReturnsToMainMenu()) {
-                            break;
-                        }
-                        continue;
-
-                    case 9:
                         System.out.println("Enter the recipe name: ");
                         String recipeToDelete = scanner.nextLine().replaceAll(" ", "%20");
                         if (recipeToDelete.isEmpty()) {
@@ -239,12 +233,12 @@ public class HTTPRestCLIApplication {
                         }
                         continue;
 
-                    case 10:
+                    case 9:
                         scanner.close();
                         return;
 
                     default:
-                        System.out.println("Please enter a valid command (1 - 10).");
+                        System.out.println("Please enter a valid command (1 - 9).");
                 }
             }
         }
