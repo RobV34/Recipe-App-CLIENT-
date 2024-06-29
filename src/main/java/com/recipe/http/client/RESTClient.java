@@ -134,7 +134,9 @@ public class RESTClient {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                String errorMessage = getErrorMessageFromResponse(response.body());
+
+                String errorMessage = getErrMessageFromResponse(response.body());
+
                 if (errorMessage.contains("\"selectedUser\" is null")) {
                     System.out.println("User with ID " + userId + " was not found.");
                     return null;
@@ -183,6 +185,7 @@ public class RESTClient {
         }
 
     }
+
 
 
     public <T> T getPOSTResponseFromHTTPRequest(String userChoiceURL, T newObjectFromUser) {
@@ -297,6 +300,18 @@ public class RESTClient {
             System.out.println();
 
         }
+
+    public String getErrMessageFromResponse(String response) {
+        ObjectMapper om = new ObjectMapper();
+        try {
+            JsonNode rootNode = om.readTree(response);
+            JsonNode messageNode = rootNode.path("message");
+            return messageNode.asText();
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 
 
