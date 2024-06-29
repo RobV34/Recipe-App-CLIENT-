@@ -23,23 +23,48 @@ public class HTTPRestCLIApplicationTest {
     @Mock
     private RESTClient restClientMock;
 
-
     @Test
-    void testUserReturnsToMainMenu() {
+    void testAddNewRecipe_UserInput() throws IOException, InterruptedException {
         MockitoAnnotations.openMocks(this);
         HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
         cliApp.setRestClient(restClientMock);
 
+        String input = "3\nLasagna\nBeef\nCheese\ndone\nLayer everything and bake.\nr\n10\n";
+        ByteArrayInputStream in = new ByteArrayInputStream(input.getBytes());
+        System.setIn(in);
 
-        String input = "r";
-        Scanner scanner = new Scanner(input);
+        // Redirecting System.out to capture the outputs
+        ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(outContent));
 
+        Recipe mockRecipe = new Recipe();
+        mockRecipe.setName("Lasagna");
+        mockRecipe.setIngredients(List.of(new Ingredient("Beef"), new Ingredient("Cheese")));
+        mockRecipe.setInstructions("Layer everything and bake.");
 
-        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
+        when(restClientMock.getPOSTResponseFromHTTPRequest(anyString(), any()))
+                .thenReturn("Recipe added successfully");
 
+        cliApp.main(new String[]{});
 
-        assertTrue(returnedToMainMenu);
+        verify(restClientMock, times(1)).getPOSTResponseFromHTTPRequest(anyString(), any());
     }
+}
+
+    @Test
+void testUserReturnsToMainMenu() {
+    MockitoAnnotations.openMocks(this);
+    HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
+    cliApp.setRestClient(restClientMock);
+
+    String input = "r";
+    System.setIn(new ByteArrayInputStream(input.getBytes())); // Set System.in to the test input
+
+    boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
+
+    assertTrue(returnedToMainMenu);
+}
+
 
     @Test
     void testGetAllRecipes() {
@@ -71,31 +96,35 @@ public class HTTPRestCLIApplicationTest {
         verify(restClientMock, times(1)).getGETResponseFromHTTPRequest("http://localhost:8080/recipes", "recipes");
     }
 
-    @Test
-    void testGetRecipeByName() {
-        MockitoAnnotations.openMocks(this);
-        HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
-        cliApp.setRestClient(restClientMock);
+   @Test
+void testGetRecipeByName() throws IOException, InterruptedException {
+    MockitoAnnotations.openMocks(this);
+    
+    HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
+    cliApp.setRestClient(restClientMock);
 
-        String input = "Lasagna";
-        Scanner scanner = new Scanner(input);
+    String recipeName = "Lasagna";
 
+    Recipe mockRecipe = new Recipe();
+    mockRecipe.setName("Lasagna");
+    mockRecipe.setIngredients(List.of(new Ingredient("Beef"), new Ingredient("Cheese")));
+    mockRecipe.setInstructions("Layer everything and bake.");
 
-        Recipe mockRecipe = new Recipe();
-        mockRecipe.setName("Lasagna");
-        mockRecipe.setIngredients(List.of(new Ingredient("Beef"), new Ingredient("Cheese")));
-        mockRecipe.setInstructions("Layer everything and bake.");
+    String expectedURL = "http://localhost:8080/recipe/" + recipeName;
+    String expectedEndpoint = "recipe/{recipeName}";
 
-        when(restClientMock.getGETResponseFromHTTPRequest(anyString(), eq("recipe/{recipeName}")))
-                .thenReturn(mockRecipe.toString());
+    when(restClientMock.getGETResponseFromHTTPRequest(expectedURL, expectedEndpoint))
+            .thenReturn(mockRecipe.toString());
 
+    cliApp.getRestClient().setServerURL("http://localhost:8080");
 
-        cliApp.getRestClient().setServerURL("http://localhost:8080");
-        cliApp.getRestClient().getGETResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", "recipe/{recipeName}");
+    String recipeResponse = cliApp.getRestClient().getGETResponseFromHTTPRequest(expectedURL, expectedEndpoint);
 
+    verify(restClientMock, times(1)).getGETResponseFromHTTPRequest(expectedURL, expectedEndpoint);
 
-        verify(restClientMock, times(1)).getGETResponseFromHTTPRequest("http://localhost:8080/recipe/Lasagna", "recipe/{recipeName}");
-    }
+    assertEquals(mockRecipe.toString(), recipeResponse);
+}
+
 
     @Test
     void testGetAllRecipes_NoRecipesFound() {
@@ -142,39 +171,40 @@ public class HTTPRestCLIApplicationTest {
     }
 
     @Test
-    void testUserReturnsToMainMenu_EmptyInput() {
-        MockitoAnnotations.openMocks(this);
-        HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
-        cliApp.setRestClient(restClientMock);
+void testUserReturnsToMainMenu_EmptyInput() {
+    MockitoAnnotations.openMocks(this);
+    HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
+    cliApp.setRestClient(restClientMock);
 
+    ByteArrayInputStream inputStream = new ByteArrayInputStream("\n\nr".getBytes());
+    System.setIn(inputStream);
+    Scanner scanner = new Scanner(System.in);
 
-        String input = "\n\nr";
-        Scanner scanner = new Scanner(input);
+    boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
 
+    assertTrue(returnedToMainMenu);
 
-        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
-
-
-        assertTrue(returnedToMainMenu);
-    }
+    System.setIn(System.in);
+}
 
 
     @Test
-    void testUserReturnsToMainMenu_InvalidInput() {
-        MockitoAnnotations.openMocks(this);
-        HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
-        cliApp.setRestClient(restClientMock);
+void testUserReturnsToMainMenu_InvalidInput() {
+    MockitoAnnotations.openMocks(this);
+    HTTPRestCLIApplication cliApp = new HTTPRestCLIApplication();
+    cliApp.setRestClient(restClientMock);
 
+    ByteArrayInputStream inputStream = new ByteArrayInputStream("x\n".getBytes());
+    System.setIn(inputStream);
+    Scanner scanner = new Scanner(System.in);
 
-        String input = "x\n";
-        Scanner scanner = new Scanner(input);
+    boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
 
+    assertFalse(returnedToMainMenu);
 
-        boolean returnedToMainMenu = cliApp.userReturnsToMainMenu();
+    System.setIn(System.in);
+}
 
-
-        assertFalse(returnedToMainMenu);
-    }
 
     @Test
     void testGetRecipeByName_EmptyResponse() {
@@ -233,6 +263,7 @@ public class HTTPRestCLIApplicationTest {
 
         verify(restClientMock, times(1)).getRecipesForUserIngredients(userId);
     }
+
 
     @Test
     void testDeleteRecipe() {
