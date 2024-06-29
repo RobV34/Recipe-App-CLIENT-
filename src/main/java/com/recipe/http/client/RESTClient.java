@@ -117,7 +117,7 @@ public class RESTClient {
             HttpResponse<String> response = getClient().send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                String errorMessage = getErrorMessageFromResponse(response.body());
+                String errorMessage = getErrMessageFromResponse(response.body());
                 if (errorMessage.contains("\"selectedUser\" is null")) {
                     System.out.println("User with ID " + userId + " was not found.");
                     return null;
@@ -267,7 +267,7 @@ public class RESTClient {
 
         }
 
-    public String getErrorMessageFromResponse(String response) {
+    public String getErrMessageFromResponse(String response) {
         ObjectMapper om = new ObjectMapper();
         try {
             JsonNode rootNode = om.readTree(response);
